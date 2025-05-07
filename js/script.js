@@ -6,7 +6,7 @@ document.addEventListener('submit', function(event) {
     const password = document.getElementById('password').value;
     
     // Kiểm tra thông tin đăng nhập (thay thế bằng logic của bạn)
-    if (email === '671802@sv.vnua.edu.vn' && password === '123456a@') {
+    if (email === 'admin@vnua.com' && password === '123456a@') {
         // Nếu đúng, chuyển hướng đến trang khác
         window.location.href = 'home.html'; 
     } else {
@@ -65,3 +65,4 @@ document.addEventListener('DOMContentLoaded', function() {
       console.error("Không tìm thấy biểu tượng đăng xuất với ID 'log_out'.");
     }
   });
+  
