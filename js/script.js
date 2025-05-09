@@ -1,7 +1,7 @@
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
   const loginForm = document.getElementById('login-form');
   if (loginForm) {
-    loginForm.addEventListener('submit', function(event) {
+    loginForm.addEventListener('submit', function (event) {
       event.preventDefault();
       const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
@@ -14,50 +14,54 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   }
 
-  // Xử lý logout
   const logoutIcon = document.getElementById('log_out');
   if (logoutIcon) {
-    logoutIcon.addEventListener('click', function() {
+    logoutIcon.addEventListener('click', function () {
       window.location.href = 'dangnhap.html';
     });
   }
 
-  // ========== PHẦN LOAD NỘI DUNG (CHỈ 1 HÀM) ==========
   function loadContent(page) {
     fetch(`pages/${page}`)
-      .then(response => {
-        if (!response.ok) throw new Error("Không thể tải nội dung");
-        return response.text();
+      .then(res => {
+        if (!res.ok) throw new Error("Không thể tải nội dung");
+        return res.text();
       })
       .then(html => {
-        const contentArea = document.getElementById('content-area');
-        contentArea.innerHTML = html;
-        
-        // Kiểm tra Chart.js trước khi khởi tạo đồ thị
-        if (typeof Chart !== 'undefined') {
-          initCharts();
-        } else {
-          console.error("Chart.js chưa được tải!");
+        const content = document.getElementById('content-area');
+        if (content) {
+          content.innerHTML = html;
+
+          loadNotificationsAndEvents();
+          if (typeof Chart !== 'undefined') {
+            initCharts();
+          }
+
+          if (page === 'khoa.html') {
+            initKhoaManagement();
+          }
         }
       })
-      .catch(error => {
-        console.error("Lỗi khi tải nội dung:", error);
-        document.getElementById('content-area').innerHTML = "<p>Lỗi khi tải nội dung.</p>";
+      .catch(err => {
+        console.error("Lỗi khi tải nội dung:", err);
+        const content = document.getElementById('content-area');
+        if (content) {
+          content.innerHTML = "<p>Lỗi khi tải nội dung.</p>";
+        }
       });
   }
 
-  // Xử lý menu items
   const menuItems = document.querySelectorAll(".menu-item");
   menuItems.forEach(item => {
-    item.addEventListener("click", function() {
+    item.addEventListener("click", function () {
       const page = this.getAttribute("data-page");
-      loadContent(page);
+      if (page) {
+        loadContent(page);
+      }
     });
   });
 
-  // ========== PHẦN XỬ LÝ ĐỒ THỊ ==========
   function initCharts() {
-    // Cấu hình chung
     const commonOptions = {
       responsive: true,
       maintainAspectRatio: false,
@@ -65,31 +69,26 @@ document.addEventListener("DOMContentLoaded", function() {
         legend: { position: 'top' },
         tooltip: {
           callbacks: {
-            label: function(context) {
-              return `${context.dataset.label}: ${context.raw} người`;
-            }
+            label: context => `${context.dataset.label}: ${context.raw} người`
           }
         }
       }
     };
 
-    // Biểu đồ sinh viên (giới hạn 6000)
     createChart('studentGenderChart', {
       type: 'bar',
       data: {
         labels: ['CNTT', 'HTTT', 'KHMT'],
         datasets: [
-          { 
-            label: 'Sinh viên Nam', 
-            data: [4500, 3800, 4200], 
-            backgroundColor: '#2E8B57',
-            borderWidth: 1
+          {
+            label: 'Sinh viên Nam',
+            data: [1300, 1200, 800],
+            backgroundColor: '#2E8B57'
           },
-          { 
-            label: 'Sinh viên Nữ', 
-            data: [3800, 4200, 3900], 
-            backgroundColor: '#1E90FF',
-            borderWidth: 1
+          {
+            label: 'Sinh viên Nữ',
+            data: [1000, 800, 850],
+            backgroundColor: '#1E90FF'
           }
         ]
       },
@@ -98,42 +97,31 @@ document.addEventListener("DOMContentLoaded", function() {
         scales: {
           y: {
             beginAtZero: true,
-            max: 6000,
+            max: 2000,
             ticks: {
-              stepSize: 1000,
-              callback: function(value) {
-                return value === 6000 ? '≥6000' : value + ' người';
-              }
+              stepSize: 500,
+              callback: v => v === 2000 ? '2000 người' : v + ' người'
             }
           }
         },
-        plugins: {
-          title: { 
-            display: true,
-            text: 'THỐNG KÊ SINH VIÊN',
-            font: { size: 16 }
-          }
-        }
+        plugins: { title: { display: true, text: 'THỐNG KÊ SINH VIÊN', font: { size: 16 } } }
       }
     });
 
-    // Biểu đồ giáo viên (giới hạn 100)
     createChart('teacherGenderChart', {
       type: 'bar',
       data: {
         labels: ['CNTT', 'HTTT', 'KHMT'],
         datasets: [
-          { 
-            label: 'Giáo viên Nam', 
-            data: [45, 60, 35], 
-            backgroundColor: '#3CB371',
-            borderWidth: 1
+          {
+            label: 'Giáo viên Nam',
+            data: [20, 30, 25],
+            backgroundColor: '#3CB371'
           },
-          { 
-            label: 'Giáo viên Nữ', 
-            data: [55, 40, 65], 
-            backgroundColor: '#D2691E',
-            borderWidth: 1
+          {
+            label: 'Giáo viên Nữ',
+            data: [30, 25, 30],
+            backgroundColor: '#D2691E'
           }
         ]
       },
@@ -142,38 +130,22 @@ document.addEventListener("DOMContentLoaded", function() {
         scales: {
           y: {
             beginAtZero: true,
-            max: 100,
+            max: 50,
             ticks: {
-              stepSize: 20,
-              callback: function(value) {
-                return value === 100 ? '≥100' : value + ' người';
-              }
+              stepSize: 10,
+              callback: v => v + ' người'
             }
           }
         },
-        plugins: {
-          title: { 
-            display: true,
-            text: 'THỐNG KÊ GIÁO VIÊN',
-            font: { size: 16 }
-          }
-        }
+        plugins: { title: { display: true, text: 'THỐNG KÊ GIÁO VIÊN', font: { size: 16 } } }
       }
     });
   }
 
-  // Hàm tạo biểu đồ
   function createChart(id, config) {
     const ctx = document.getElementById(id);
-    if (!ctx) {
-      console.warn(`Không tìm thấy canvas #${id}`);
-      return;
-    }
-
-    // Xóa biểu đồ cũ nếu tồn tại
-    if (ctx.chart) {
-      ctx.chart.destroy();
-    }
+    if (!ctx) return;
+    if (ctx.chart) ctx.chart.destroy();
 
     try {
       ctx.chart = new Chart(ctx.getContext('2d'), config);
@@ -182,11 +154,150 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   }
 
-  // ========== KHỞI CHẠY BAN ĐẦU ==========
-  // Kiểm tra Chart.js trước khi load
-  if (typeof Chart === 'undefined') {
-    console.error("Vui lòng nhúng Chart.js trước khi sử dụng!");
-  } else {
+  function loadNotificationsAndEvents() {
+    const notifications = [
+      { date: "07/05/2025", content: "Thông báo tuyển sinh đào tạo trình độ thạc sĩ năm 2025" },
+      { date: "07/05/2025", content: "Xét tuyển nghiên cứu sinh năm 2025" },
+      { date: "10/05/2025", content: "Thông báo thu học phí học kì II năm 2025" },
+      { date: "15/05/2025", content: "Thông báo thu học phí đối với nghiên cứu sinh" },
+      { date: "21/05/2025", content: "Đăng kí nguyện vọng lớp học hè năm 2025" }
+    ];
+
+    const events = [
+      { date: "05/05/2025", content: "Ngày hội việc làm năm 2025" },
+      { date: "07/05/2025", content: "Kỉ niệm 71 năm chiến thắng Điện Biên Phủ" },
+      { date: "10-18/05/2025", content: "Festival hoa, cây cảnh VNUA 2025" }
+    ];
+
+    const notificationList = document.getElementById('notificationList');
+    const eventList = document.getElementById('eventList');
+
+    if (notificationList) {
+      notificationList.innerHTML = '';
+      notifications.forEach(n => {
+        const li = document.createElement('li');
+        li.innerHTML = `<strong>${n.date}:</strong> ${n.content}`;
+        notificationList.appendChild(li);
+      });
+    }
+
+    if (eventList) {
+      eventList.innerHTML = '';
+      events.forEach(e => {
+        const li = document.createElement('li');
+        li.innerHTML = `<strong>${e.date}:</strong> ${e.content}`;
+        eventList.appendChild(li);
+      });
+    }
+  }
+
+  if (typeof Chart !== 'undefined') {
     loadContent("trangchu.html");
+  } else {
+    console.error("Vui lòng nhúng Chart.js!");
   }
 });
+
+function initKhoaManagement() {
+  let khoaData = JSON.parse(localStorage.getItem('khoaData')) || [
+    { maKhoa: 'CNTT', tenKhoa: 'Công nghệ thông tin' }
+  ];
+
+  function saveKhoaData() {
+    localStorage.setItem('khoaData', JSON.stringify(khoaData));
+  }
+
+  function renderKhoaTable() {
+    const tbody = document.querySelector('#khoaTable tbody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    khoaData.forEach((khoa, index) => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${khoa.maKhoa}</td>
+        <td>${khoa.tenKhoa}</td>
+        <td>
+          <button class="action-btn btn-edit" data-index="${index}"><i class="bx bx-edit"></i> Sửa</button>
+          <button class="action-btn btn-delete" data-index="${index}"><i class="bx bx-trash-alt"></i> Xóa</button>
+        </td>
+      `;
+      tbody.appendChild(row);
+    });
+
+    document.querySelectorAll('.btn-edit').forEach(btn => {
+      btn.addEventListener('click', () => openKhoaModal(true, parseInt(btn.dataset.index)));
+    });
+
+    document.querySelectorAll('.btn-delete').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (confirm("Bạn có chắc muốn xóa?")) {
+          khoaData.splice(parseInt(btn.dataset.index), 1);
+          saveKhoaData();
+          renderKhoaTable();
+        }
+      });
+    });
+  }
+
+  window.openKhoaModal = function (isEdit = false, index = -1) {
+    const modal = document.getElementById('khoaModal');
+    if (!modal) return;
+
+    document.getElementById('modalTitle').textContent = isEdit ? 'Sửa Khoa' : 'Thêm Khoa';
+
+    if (isEdit && index >= 0) {
+      document.getElementById('maKhoa').value = khoaData[index].maKhoa;
+      document.getElementById('tenKhoa').value = khoaData[index].tenKhoa;
+      document.getElementById('editingRowIndex').value = index;
+    } else {
+      document.getElementById('khoaForm').reset();
+      document.getElementById('editingRowIndex').value = '';
+    }
+
+    modal.style.display = 'flex';
+  };
+
+  window.closeKhoaModal = function () {
+    const modal = document.getElementById('khoaModal');
+    if (modal) modal.style.display = 'none';
+  };
+
+  document.getElementById('khoaModal')?.addEventListener('click', (e) => {
+    if (e.target.id === 'khoaModal') {
+      closeKhoaModal();
+    }
+  });
+
+  const form = document.getElementById('khoaForm');
+  if (form) {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const maKhoa = document.getElementById('maKhoa').value.trim();
+      const tenKhoa = document.getElementById('tenKhoa').value.trim();
+      const index = document.getElementById('editingRowIndex').value;
+
+      if (!maKhoa || !tenKhoa) {
+        alert('Vui lòng nhập đầy đủ thông tin');
+        return;
+      }
+
+      if (index === '' && khoaData.some(k => k.maKhoa === maKhoa)) {
+        alert('Mã khoa đã tồn tại');
+        return;
+      }
+
+      if (index !== '') {
+        khoaData[index] = { maKhoa, tenKhoa };
+      } else {
+        khoaData.push({ maKhoa, tenKhoa });
+      }
+
+      saveKhoaData();
+      renderKhoaTable();
+      closeKhoaModal();
+    });
+  }
+
+  renderKhoaTable();
+}

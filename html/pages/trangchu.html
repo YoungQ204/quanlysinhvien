@@ -12,7 +12,7 @@
 
     <div class="card green">
       <div class="card-body">
-        <div class="card-count">1</div>
+        <div class="card-count">2</div>
         <div class="card-title">Lớp</div>
         <div class="card-icon"><i class="bx bx-table"></i></div>
       </div>
@@ -28,7 +28,7 @@
 
     <div class="card red">
       <div class="card-body">
-        <div class="card-count">2</div>
+        <div class="card-count">4</div>
         <div class="card-title">Môn học</div>
         <div class="card-icon"><i class="bx bxs-folder-open"></i></div>
       </div>
@@ -38,30 +38,19 @@
   <!-- Charts Section -->
   <section class="charts-section">
     <div class="chart-container">
-      <h2>Thống kê sinh viên theo giới tính</h2>
       <canvas id="studentGenderChart"></canvas>
     </div>
     <div class="chart-container">
-      <h2>Thống kê giáo viên theo giới tính</h2>
       <canvas id="teacherGenderChart"></canvas>
     </div>
   </section>
   
-  <section class="notifications">
-    <h2>Thông báo gần đây</h2>
-    <ul class="notification-list">
-      <li><strong>05/05:</strong> Cập nhật điểm giữa kỳ môn Toán rời rạc.</li>
-      <li><strong>03/05:</strong> Thêm môn học "Trí tuệ nhân tạo" vào hệ thống.</li>
-      <li><strong>01/05:</strong> Thông báo nghỉ lễ 30/4 - 1/5.</li>
-    </ul>
-  </section>
+<section class="notifications">
+  <h2>Thông báo</h2>
+  <ul class="notification-list" id="notificationList"></ul>
+</section>
 
-  <section class="calendar">
-    <h2>Sự kiện sắp diễn ra</h2>
-    <ul class="event-list">
-      <li><strong>10/05:</strong> Thi cuối kỳ môn CSDL</li>
-      <li><strong>12/05:</strong> Bắt đầu đăng ký học phần kỳ mới</li>
-      <li><strong>15/05:</strong> Hội thảo hướng nghiệp Khoa CNTT</li>
-    </ul>
-  </section>
-</div>
+<section class="calendar">
+  <h2>Sự kiện sắp tới</h2>
+  <ul class="event-list" id="eventList"></ul>
+</section>
